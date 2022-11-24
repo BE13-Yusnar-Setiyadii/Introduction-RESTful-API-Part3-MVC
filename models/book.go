@@ -10,5 +10,5 @@ type Book struct {
 	Publisher   string
 	Author      string
 	PublishYear string
-	UserId      uint
+	UserId      User
 }
