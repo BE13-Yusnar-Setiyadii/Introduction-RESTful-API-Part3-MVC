@@ -50,7 +50,6 @@ func GetUserById(user models.User, iduint uint) (models.User, error) {
 	return user, nil
 }
 
-// db.Unscoped().Delete(&order)
 func DeleteUserById(user models.User, iduint uint) ([]models.User, error) {
 	var users []models.User
 	tx := config.DB.Unscoped().Delete(&user, iduint)
@@ -64,7 +63,6 @@ func DeleteUserById(user models.User, iduint uint) ([]models.User, error) {
 }
 
 func UpdateUserById(user models.User, iduint uint) (models.User, error) {
-	// var users []models.User
 	tx := config.DB.First(&user, iduint)
 	if tx.Error != nil {
 		return user, tx.Error
