@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"yusnar/rest/api/mvc/entities"
 	"yusnar/rest/api/mvc/helper"
 	"yusnar/rest/api/mvc/models"
 	"yusnar/rest/api/mvc/repositories"
@@ -15,7 +16,16 @@ func GetUsersController(c echo.Context) error {
 	if errGet != nil {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error get all user"))
 	}
-	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success get all user", result))
+	var dataResponse []entities.UserResponse
+	for _, v := range result {
+		dataResponse = append(dataResponse, entities.UserResponse{
+			Name:        v.Name,
+			Email:       v.Email,
+			Telp_number: v.Telp_number,
+			Address:     v.Address,
+		})
+	}
+	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success get all user", dataResponse))
 }
 
 func CreateUserController(c echo.Context) error {
@@ -24,11 +34,11 @@ func CreateUserController(c echo.Context) error {
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error bind user"))
 	}
-	errCreate := repositories.CreateUser(user)
+	result, errCreate := repositories.CreateUser(user)
 	if errCreate != nil {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error create user"))
 	}
-	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success create user", user))
+	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success create user", result))
 }
 
 func GetUserByIdController(c echo.Context) error {
@@ -67,14 +77,14 @@ func UpdateUserByIdController(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error param user"))
 	}
 	iduint := uint(id)
-	_, errRead := repositories.UpdateUserById(user, iduint)
+	result, errRead := repositories.UpdateUserById(user, iduint)
 	if errRead != nil {
 		return c.JSON(http.StatusFound, helper.FailedResponse("error id not found"))
 	}
-	c.Bind(&user)
-	errUpdate := repositories.DataAfterUpdate(user)
+	c.Bind(&result)
+	result2, errUpdate := repositories.DataAfterUpdate(result)
 	if errUpdate != nil {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error update user by id"))
 	}
-	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success update user by id", user))
+	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success update user by id", result2))
 }
