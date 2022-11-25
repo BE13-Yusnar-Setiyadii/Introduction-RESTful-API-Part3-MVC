@@ -14,6 +14,7 @@ type UserCore struct {
 }
 
 type UserResponse struct {
+	ID          uint   `json:"ID"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	Telp_number string `json:"phone"`

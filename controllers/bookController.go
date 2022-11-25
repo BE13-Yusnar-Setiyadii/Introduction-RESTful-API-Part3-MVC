@@ -16,23 +16,32 @@ func GetBooksController(c echo.Context) error {
 	if errGet != nil {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error get all book"))
 	}
-	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success get all book", result))
+	var dataResponse []entities.BookResponse
+	for _, v := range result {
+		dataResponse = append(dataResponse, entities.BookResponse{
+			ID:          v.ID,
+			Title:       v.Title,
+			Publisher:   v.Publisher,
+			Author:      v.Author,
+			PublishYear: v.PublishYear,
+			UserID:      v.UserID,
+		})
+	}
+	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success get all book", dataResponse))
 }
 
 func CreateBookController(c echo.Context) error {
-	book := entities.BookRequest{}
+	book := models.Book{}
 	errBind := c.Bind(&book)
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error bind book"))
 	}
-	var dataCore = entities.BookRequestToCore(book)
-	errCreate := repositories.CreateBook(dataCore)
+	result, errCreate := repositories.CreateBook(book)
 	if errCreate != nil {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error create book"))
 	}
-	return c.JSON(http.StatusOK, helper.SuccessResponse("success create book"))
+	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success create user", result))
 }
-
 func GetBookByIdController(c echo.Context) error {
 	book := models.Book{}
 	// var users []models.User

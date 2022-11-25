@@ -19,6 +19,7 @@ func GetUsersController(c echo.Context) error {
 	var dataResponse []entities.UserResponse
 	for _, v := range result {
 		dataResponse = append(dataResponse, entities.UserResponse{
+			ID:          v.ID,
 			Name:        v.Name,
 			Email:       v.Email,
 			Telp_number: v.Telp_number,
@@ -82,9 +83,9 @@ func UpdateUserByIdController(c echo.Context) error {
 		return c.JSON(http.StatusFound, helper.FailedResponse("error id not found"))
 	}
 	c.Bind(&result)
-	result2, errUpdate := repositories.DataAfterUpdate(result)
+	_, errUpdate := repositories.DataAfterUpdate(result)
 	if errUpdate != nil {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error update user by id"))
 	}
-	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success update user by id", result2))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("success update user by id"))
 }
