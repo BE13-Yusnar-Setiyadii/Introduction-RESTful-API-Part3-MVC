@@ -16,30 +16,28 @@ func GetUsersController(c echo.Context) error {
 	if errGet != nil {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error get all user"))
 	}
-	var dataResponse []entities.UserResponse
-	for _, v := range result {
-		dataResponse = append(dataResponse, entities.UserResponse{
-			ID:          v.ID,
-			Name:        v.Name,
-			Email:       v.Email,
-			Telp_number: v.Telp_number,
-			Address:     v.Address,
-		})
-	}
+	var dataResponse = entities.ListUserCoreToResponse(result)
 	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success get all user", dataResponse))
 }
 
 func CreateUserController(c echo.Context) error {
-	user := models.User{}
+	user := entities.UserRequest{}
 	errBind := c.Bind(&user)
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error bind user"))
 	}
-	result, errCreate := repositories.CreateUser(user)
+	userCoreData := entities.UserCore{
+		Name:        user.Name,
+		Email:       user.Email,
+		Password:    user.Password,
+		Telp_number: user.Telp_number,
+		Address:     user.Address,
+	}
+	errCreate := repositories.CreateUser(userCoreData)
 	if errCreate != nil {
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error create user"))
 	}
-	return c.JSON(http.StatusOK, helper.SuccessWithDataResponse("success create user", result))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("success create user"))
 }
 
 func GetUserByIdController(c echo.Context) error {

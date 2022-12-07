@@ -5,15 +5,11 @@ import (
 	"yusnar/rest/api/mvc/controllers"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func New() *echo.Echo {
 	fmt.Println("run main")
 	e := echo.New()
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: `[${time_rfc3339}] Method=${method} Status=${status} Host=${host} Path=${path} Latency Human=${latency_human}` + "\n==============================\n",
-	}))
 	//for user
 	e.GET("/users", controllers.GetUsersController)
 	e.POST("/users", controllers.CreateUserController)

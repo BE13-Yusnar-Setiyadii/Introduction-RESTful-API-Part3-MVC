@@ -9,39 +9,28 @@ import (
 
 func GetBooks() ([]entities.BookCore, error) {
 	var books []models.Book
-	tx := config.DB.Find(&books)
+	tx := config.DB.Preload("User").Find(&books)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
-	var dataCore []entities.BookCore
-	for _, v := range books {
-		dataCore = append(dataCore, entities.BookCore{
-			ID:          v.ID,
-			Title:       v.Title,
-			Publisher:   v.Publisher,
-			Author:      v.Author,
-			PublishYear: v.PublishYear,
-			UserID:      v.UserID,
-		})
-
-	}
-
+	var dataCore = models.ListModelToBookCore(books)
 	return dataCore, nil
 }
 
-func CreateBook(book models.Book) (models.Book, error) {
+func CreateBook(dataCore entities.BookCore) error {
+	book := models.BookCoreToModel(dataCore)
 	tx := config.DB.Create(&book)
 	if tx.Error != nil {
-		return book, tx.Error
+		return tx.Error
 	}
 	if tx.RowsAffected == 0 {
-		return book, errors.New("create book failed")
+		return errors.New("create book failed")
 	}
-	return book, nil
+	return nil
 }
 
 func GetBookById(book models.Book, iduint uint) (models.Book, error) {
-	tx := config.DB.First(&book, iduint)
+	tx := config.DB.Preload("User").First(&book, iduint)
 	if tx.Error != nil {
 		return book, tx.Error
 	}

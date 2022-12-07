@@ -13,33 +13,20 @@ func GetUsers() ([]entities.UserCore, error) {
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
-	var dataCore []entities.UserCore
-	for _, v := range users {
-		dataCore = append(dataCore, entities.UserCore{
-			ID:          v.ID,
-			Name:        v.Name,
-			Email:       v.Email,
-			Password:    v.Password,
-			Telp_number: v.Telp_number,
-			Address:     v.Address,
-			CreatedAt:   v.CreatedAt,
-			UpdatedAt:   v.UpdatedAt,
-		})
-
-	}
-
+	var dataCore = models.ListModelToUserCore(users)
 	return dataCore, nil
 }
 
-func CreateUser(user models.User) (models.User, error) {
+func CreateUser(dataCore entities.UserCore) error {
+	user := models.UserCoreToModel(dataCore)
 	tx := config.DB.Create(&user)
 	if tx.Error != nil {
-		return user, tx.Error
+		return tx.Error
 	}
 	if tx.RowsAffected == 0 {
-		return user, errors.New("create user failed")
+		return errors.New("create user failed")
 	}
-	return user, nil
+	return nil
 }
 
 func GetUserById(user models.User, iduint uint) (models.User, error) {

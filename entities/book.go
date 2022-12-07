@@ -1,7 +1,5 @@
 package entities
 
-import "time"
-
 type BookCore struct {
 	ID          uint
 	Title       string
@@ -9,8 +7,15 @@ type BookCore struct {
 	Author      string
 	PublishYear string
 	UserID      uint
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	User        UserCore
+}
+
+type BookRequest struct {
+	Title       string `json:"title" form:"title"`
+	Publisher   string `json:"publisher" form:"publisher"`
+	Author      string `json:"author" form:"author"`
+	PublishYear string `json:"publish_year" form:"publish_year"`
+	UserID      uint   `json:"user_id" form:"user_id"`
 }
 
 type BookResponse struct {
@@ -20,4 +25,14 @@ type BookResponse struct {
 	Author      string `json:"author"`
 	PublishYear string `json:"publish_year"`
 	UserID      uint   `json:"user_id"`
+}
+
+func BookRequestToCore(dataReq BookRequest) BookCore {
+	return BookCore{
+		Title:       dataReq.Title,
+		Publisher:   dataReq.Publisher,
+		Author:      dataReq.Author,
+		PublishYear: dataReq.PublishYear,
+		UserID:      dataReq.UserID,
+	}
 }
